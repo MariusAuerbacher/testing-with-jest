@@ -57,6 +57,56 @@ describe("Test Products APIs", () => {
 
   it("Should test that GET /products returns 200 and a body", async () => {
     const response = await client.get("/products").expect(200)
-    console.log(response.body)
+    expect(response.body).toBeDefined()
+  })
+
+  it("Should test that GET /products/:id returns 404", async () => {
+    await client.get("/products/123456123456123456123456").expect(404)
+    
+  })
+
+
+  it("Should test that GET /products/:id returns 200", async () => {
+    const products = await ProductsModel.find()
+    const response = await client.get(`/products/${products[0]._id}`).expect(200)
+    expect(response.body._id).toBeDefined()
+    
+  })
+
+  it("Should test that DELETE /products/:id returns 204", async () => {
+    const products = await ProductsModel.find()
+    await client.delete(`/products/${products[0]._id}`).expect(204)
+   
+  })
+  it("Should test that DELETE /products/:id returns 404", async () => {
+    await client.delete(`/products/123456123456123456123456`).expect(404)
+   
+  })
+
+  it("Should test that PUT /products/:id returns 200", async () => {
+    const products = await ProductsModel.find()
+    await client.put(`/products/${products[0]._id}`).send(validProduct).expect(200)
+  })
+
+  it("Should test that PUT /products/:id returns 404", async () => {
+
+    await client.put(`/products/123456123456123456123456`).send(validProduct).expect(404)
+  })
+
+  it("Should test that PUT /products/:id returns changed name", async () => {
+    const products = await ProductsModel.find()
+    await client.put(`/products/${products[0]._id}`).send({name: "laptop"}).expect(200)
+    const product = await ProductsModel.findById(products[0]._id)
+    expect(product.name).toBe("laptop")
+  })
+
+
+  it("Should test that PUT /products/:id returns name is string", async () => {
+    const products = await ProductsModel.find()
+    const response = await client.put(`/products/${products[0]._id}`).send({name: "laptop"}).expect(200)
+    expect(typeof response.body.name).toBe("string")
+
   })
 })
+
+

@@ -32,6 +32,7 @@ productsRouter.get("/:id", async (req, res, next) => {
       next(createError(404, `Resource with id ${req.params.id} not found!`))
     }
   } catch (error) {
+    console.log(error)
     next(error)
   }
 })
